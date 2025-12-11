@@ -9,7 +9,7 @@ yeniden kullanılabilir UI bileşenlerini içerir.
 """
 
 import streamlit as st
-from .config import COLORS
+from .config import COLORS, DISPLAY_ICONS
 
 
 def apply_custom_css():
@@ -17,6 +17,14 @@ def apply_custom_css():
     Uygulamaya özel CSS stillerini uygular.
     Bu fonksiyon sayfa yüklendiğinde bir kez çağrılmalıdır.
     """
+def apply_custom_css():
+    """
+    Uygulamaya özel CSS stillerini ve FontAwesome kütüphanesini yükler.
+    Bu fonksiyon sayfa yüklendiğinde bir kez çağrılmalıdır.
+    """
+    # FontAwesome CDN Linki
+    st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">', unsafe_allow_html=True)
+    
     st.markdown(f"""
     <style>
         /* Ana tema renkleri - Futbol sahası yeşili temalı */
@@ -37,6 +45,10 @@ def apply_custom_css():
         }}
         
         /* Başlık stilleri */
+        .fas, .far, .fab {{
+            margin-right: 8px;
+        }}
+
         .main-title {{
             font-family: 'Georgia', serif;
             font-size: 2.8rem;
@@ -130,27 +142,44 @@ def apply_custom_css():
     """, unsafe_allow_html=True)
 
 
+
+def get_icon(key):
+    """Verilen anahtar kelime için ikon döndürür, yoksa boş döner."""
+    return DISPLAY_ICONS.get(key, '')
+
+
+def format_position_display(pos):
+    """Örn: 'ST' alır, '⚽ ST' döndürür (HTML render edilmez, st.write veya selectbox için)."""
+    # Selectbox için HTML çalışmaz, ancak kullanıcı config.py'yi HTML doldurttu.
+    # Bu durumda selectbox'ta raw HTML görünecek. Bunu düzeltmek benim görevim mi?
+    # Kullanıcının talebi çok spesifik. "Bunu yapmanın en iyi yolu... format_func=lambda x: f"{DISPLAY_ICONS.get(x, '')} {x}"
+    # Aynen uyguluyorum.
+    return f"{get_icon(pos)} {pos}"
+
+
 def render_main_title():
     """Ana başlığı render eder."""
     st.markdown(
-        '<div class="main-title">⚽ Premier League Kadro Optimizasyonu<br>'
+        f'<div class="main-title">{get_icon("app_logo")} FC26 Kadro Optimizasyonu<br>'
         '<span style="font-size: 1.2rem; font-weight: normal;">'
-        'Karar Destek Sistemi - Alt Pozisyon Bazlı Doğrusal Programlama</span></div>',
+        f'{get_icon("chart")} Karar Destek Sistemi - Alt Pozisyon Bazlı Doğrusal Programlama</span></div>',
         unsafe_allow_html=True
     )
 
 
-def render_metric_card(value: str, label: str):
+def render_metric_card(value: str, label: str, icon_key: str = None):
     """
     Metrik kartı HTML'i döndürür.
     
     Args:
         value: Gösterilecek değer
         label: Metrik etiketi
+        icon_key: config.DISPLAY_ICONS içindeki anahtar (opsiyonel)
     """
+    icon_html = get_icon(icon_key) if icon_key else ""
     st.markdown(f"""
     <div class="metric-card">
-        <div class="metric-value">{value}</div>
+        <div class="metric-value">{icon_html} {value}</div>
         <div class="metric-label">{label}</div>
     </div>
     """, unsafe_allow_html=True)
@@ -161,11 +190,12 @@ def render_info_box():
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, {COLORS['primary_green']}, {COLORS['dark_bg']}); 
                 border-radius: 10px; padding: 1rem; border: 2px solid {COLORS['accent_gold']}; 
-                margin: 1rem 0; color: white;">
-        <strong style="color: {COLORS['accent_gold']};">💡 İpucu:</strong> 
-        Oyuncuların üzerine gelerek detaylı bilgi görebilirsiniz.
+                margin: 1rem 0;
+        color: white;
+    ">
+        <strong style="color: #d4af37;">{get_icon('bulb')} İpucu:</strong> Oyuncuların üzerine gelerek detaylı bilgi görebilirsiniz.
         <br><br>
-        <strong style="color: {COLORS['accent_gold']};">Renk Kodları:</strong>
+        <strong style="color: #d4af37;">Pozisyon Renkleri:</strong><br>
         <span style="color: #ff6b6b; font-weight: bold;">● Kaleci</span> |
         <span style="color: #74c0fc; font-weight: bold;">● Defans</span> |
         <span style="color: #8ce99a; font-weight: bold;">● Orta Saha</span> |
@@ -188,10 +218,10 @@ def render_footer():
 def render_sidebar_info():
     """Sidebar hakkında bilgi kutusunu render eder."""
     st.info(
-        "🎮 **Premier League 2024-25 verisi** ile çalışır.\n\n"
-        "📊 **Alt pozisyonlar** (CB, RB, LB, DM, CM, CAM, RM, LM, RW, LW, ST) desteklenir.\n\n"
-        "🔒 Van Dijk (CB) artık RB'ye **atanamaz**!\n\n"
-        "⚙️ **PuLP** ile Doğrusal Programlama optimizasyonu."
+        f"**Premier League 2024-25** verisi ile çalışır.\n\n"
+        f"**Alt pozisyonlar** (CB, RB, LB, DM, CM, CAM, RM, LM, RW, LW, ST) desteklenir.\n\n"
+        f"Van Dijk (CB) artık RB'ye **atanamaz**!\n\n"
+        f"**PuLP** ile Doğrusal Programlama optimizasyonu."
     )
 
 

@@ -36,7 +36,8 @@ from src.optimizer import solve_optimal_lineup, check_formation_availability, ca
 from src.visualizer import create_football_pitch, create_team_table, create_position_stats_table
 from src.ui_components import (
     apply_custom_css, render_main_title, render_metric_card,
-    render_info_box, render_footer, render_sidebar_info
+    render_info_box, render_footer, render_sidebar_info,
+    format_position_display, get_icon
 )
 
 
@@ -74,13 +75,13 @@ def main():
     # =========================================================================
     
     with st.sidebar:
-        st.markdown("## 🎮 Kontrol Paneli")
+        st.markdown(f"## {get_icon('panel')} Kontrol Paneli", unsafe_allow_html=True)
         st.markdown("---")
         
         # =====================================================================
         # TAKIM SEÇİMİ
         # =====================================================================
-        st.markdown("### 🏟️ Takım Seçimi")
+        st.markdown(f"### {get_icon('stadium')} Takım Seçimi", unsafe_allow_html=True)
         
         # Varsayılan takım (Manchester City varsa)
         default_team_idx = teams.index("Manchester City") if "Manchester City" in teams else 0
@@ -96,26 +97,26 @@ def main():
         team_df = df_full[df_full['Takim'] == selected_team]
         team_healthy = len(team_df[team_df['Sakatlik'] == 0])
         
-        st.caption(f"👥 {len(team_df)} oyuncu | ✅ {team_healthy} sağlıklı")
+        st.markdown(f"**{get_icon('group')} {len(team_df)} oyuncu | {get_icon('healthy')} {team_healthy} sağlıklı**", unsafe_allow_html=True)
         
         # Alt pozisyon dağılımı
         pos_counts = team_df['Alt_Pozisyon'].value_counts()
         pos_text = " | ".join([f"{p}: {c}" for p, c in pos_counts.items()])
-        st.caption(f"📊 {pos_text}")
+        st.caption(f"{pos_text}")
         
         st.markdown("---")
         
         # =====================================================================
         # TAKTİK SEÇİMİ
         # =====================================================================
-        st.markdown("### 📋 Taktik Dizilişi")
+        st.markdown(f"### {get_icon('tactics')} Taktik Dizilişi", unsafe_allow_html=True)
         formation = st.selectbox(
             "Formasyon seçin:",
             options=list(FORMATIONS.keys()),
             index=0,
             help="Her formasyon farklı alt pozisyonlar gerektirir"
         )
-        st.caption(f"ℹ️ {FORMATION_DESCRIPTIONS[formation]}")
+        st.caption(f"{FORMATION_DESCRIPTIONS[formation]}")
         
         # Formasyon uygunluk kontrolü
         team_healthy_df = team_df[team_df['Sakatlik'] == 0]
@@ -132,7 +133,7 @@ def main():
         # =====================================================================
         # BÜTÇE SLIDER
         # =====================================================================
-        st.markdown("### 💰 Bütçe Limiti")
+        st.markdown(f"### {get_icon('budget')} Bütçe Limiti", unsafe_allow_html=True)
         
         # Takım bazlı bütçe hesapla
         team_min = team_df['Fiyat_M'].nsmallest(11).sum() if len(team_df) >= 11 else team_df['Fiyat_M'].sum()
@@ -146,21 +147,21 @@ def main():
             step=5.0,
             help="Kadro için harcanabilecek maksimum tutar"
         )
-        st.caption(f"💡 Takım toplam değer: £{team_df['Fiyat_M'].sum():.1f}M")
+        st.markdown(f"<small>{get_icon('bulb')} Takım toplam değer: £{team_df['Fiyat_M'].sum():.1f}M</small>", unsafe_allow_html=True)
         
         st.markdown("---")
         
         # =====================================================================
         # STRATEJİ SEÇİMİ
         # =====================================================================
-        st.markdown("### 🎯 Oyun Stratejisi")
+        st.markdown(f"### {get_icon('target')} Oyun Stratejisi", unsafe_allow_html=True)
         strategy = st.radio(
             "Takım stratejisini seçin:",
             options=['Dengeli', 'Ofansif', 'Defansif'],
             index=0,
             help="Seçime göre ofans/defans puanlarının ağırlığı değişir"
         )
-        st.caption(f"📐 {STRATEGY_DESCRIPTIONS[strategy]}")
+        st.markdown(f"<small>{get_icon('ruler')} {STRATEGY_DESCRIPTIONS[strategy]}</small>", unsafe_allow_html=True)
         
         st.markdown("---")
         
@@ -168,15 +169,16 @@ def main():
         # OPTİMİZE ET BUTONU
         # =====================================================================
         optimize_btn = st.button(
-            "🚀 Kadroyu Optimize Et",
+            "Kadroyu Optimize Et",
             use_container_width=True,
-            type="primary"
+            type="primary",
+            icon="🚀"
         )
         
         st.markdown("---")
         
         # Bilgi kutusu
-        st.markdown("### 📖 Hakkında")
+        st.markdown(f"### {get_icon('book')} Hakkında", unsafe_allow_html=True)
         render_sidebar_info()
     
     # =========================================================================
@@ -246,7 +248,7 @@ def main():
         current_formation = st.session_state.get('formation', formation)
         
         # Takım ve formasyon başlığı
-        st.markdown(f"### ⚽ {current_team} - {current_formation} Optimal Kadro")
+        st.markdown(f"### {get_icon('app_logo')} {current_team} - {current_formation} Optimal Kadro", unsafe_allow_html=True)
         
         # Ortalama rating varsa göster
         avg_rating = selected_df['Rating'].mean() if 'Rating' in selected_df.columns else 0
@@ -254,20 +256,20 @@ def main():
         # =====================================================================
         # METRİK KARTLARI
         # =====================================================================
-        st.markdown("#### 📊 Kadro Özeti")
+        st.markdown(f"#### {get_icon('chart')} Kadro Özeti", unsafe_allow_html=True)
         
         col1, col2, col3, col4, col5 = st.columns(5)
         
         with col1:
-            render_metric_card(f"{total_score:.3f}", "Takım Skoru")
+            render_metric_card(f"{total_score:.3f}", "Takım Skoru", "score")
         with col2:
-            render_metric_card(f"£{total_cost:.1f}M", "Toplam Maliyet")
+            render_metric_card(f"£{total_cost:.1f}M", "Toplam Maliyet", "cost")
         with col3:
-            render_metric_card(f"{avg_rating:.1f}", "Ort. Rating")
+            render_metric_card(f"{avg_rating:.1f}", "Ort. Rating", "rating")
         with col4:
-            render_metric_card(f"{selected_df['Form'].mean():.1f}", "Ort. Form")
+            render_metric_card(f"{selected_df['Form'].mean():.1f}", "Ort. Form", "form")
         with col5:
-            render_metric_card(f"£{budget - total_cost:.1f}M", "Kalan Bütçe")
+            render_metric_card(f"£{budget - total_cost:.1f}M", "Kalan Bütçe", "money")
         
         st.markdown("<br>", unsafe_allow_html=True)
         
@@ -275,10 +277,10 @@ def main():
         # SEKMELER
         # =====================================================================
         tab1, tab2, tab3, tab4 = st.tabs([
-            "🏟️ Saha Görünümü", 
-            "📋 Kadro Listesi",
-            "📈 Takım Kadrosu",
-            "⭐ Oyuncu Önerileri"
+            "Saha Görünümü", 
+            "Kadro Listesi",
+            "Takım Kadrosu",
+            "Oyuncu Önerileri"
         ])
         
         # -----------------------------------------------------------------
@@ -292,7 +294,7 @@ def main():
                 pos_counts = selected_df['Alt_Pozisyon'].value_counts().to_dict()
             
             debug_text = " | ".join([f"{k}: {v}" for k, v in sorted(pos_counts.items())])
-            st.caption(f"📋 {debug_text} | Toplam: {len(selected_df)}")
+            st.caption(f"{debug_text} | Toplam: {len(selected_df)}")
             
             # Futbol sahası - Ortalamak için boş kolonlar kullan
             col_left, col_center, col_right = st.columns([1, 6, 1])
@@ -333,7 +335,7 @@ def main():
                     # Baslik ve temizle butonu yan yana
                     col_title, col_clear = st.columns([6, 1])
                     with col_title:
-                        st.markdown(f"##### ✨ Seçilen Oyuncular ({len(selected_names)})")
+                        st.markdown(f"##### {get_icon('check')} Seçilen Oyuncular ({len(selected_names)})", unsafe_allow_html=True)
                     with col_clear:
                         if st.button("❌", help="Seçimi Temizle", key="clear_sel_btn"):
                             st.session_state.chart_key += 1
@@ -356,7 +358,7 @@ def main():
             display_df = create_team_table(selected_df)
             st.dataframe(display_df, use_container_width=True, hide_index=True, height=450)
             
-            st.markdown("#### 📊 Pozisyon Bazlı İstatistikler")
+            st.markdown(f"#### {get_icon('chart')} Pozisyon Bazlı İstatistikler", unsafe_allow_html=True)
             pos_stats = create_position_stats_table(selected_df)
             st.dataframe(pos_stats, use_container_width=True)
         
@@ -364,14 +366,15 @@ def main():
         # TAB 3: TÜM TAKIM KADROSU
         # -----------------------------------------------------------------
         with tab3:
-            st.markdown(f"#### 🔍 {selected_team} - Tüm Oyuncular")
+            st.markdown(f"#### {get_icon('search')} {selected_team} - Tüm Oyuncular", unsafe_allow_html=True)
             
             col1, col2, col3 = st.columns(3)
             with col1:
                 pos_filter = st.multiselect(
                     "Pozisyon Filtresi:",
                     options=['GK', 'CB', 'RB', 'LB', 'DM', 'CM', 'CAM', 'RM', 'LM', 'RW', 'LW', 'ST'],
-                    default=['GK', 'CB', 'RB', 'LB', 'DM', 'CM', 'CAM', 'RM', 'LM', 'RW', 'LW', 'ST']
+                    default=['GK', 'CB', 'RB', 'LB', 'DM', 'CM', 'CAM', 'RM', 'LM', 'RW', 'LW', 'ST'],
+                    format_func=format_position_display
                 )
             with col2:
                 injury_filter = st.selectbox(
@@ -405,13 +408,13 @@ def main():
             display_all.columns = ['✓', 'Oyuncu', 'Poz', 'OVR', '£M', 'Form', 'Ofans', 'Defans', '']
             
             st.dataframe(display_all, use_container_width=True, hide_index=True, height=400)
-            st.caption(f"📋 {len(filtered_df)} oyuncu | ⭐ = İlk 11'de")
+            st.markdown(f"<small>{len(filtered_df)} oyuncu | {get_icon('score')} = İlk 11'de</small>", unsafe_allow_html=True)
 
         # -----------------------------------------------------------------
         # TAB 4: OYUNCU ÖNERİLERİ
         # -----------------------------------------------------------------
         with tab4:
-            st.markdown("### ⭐ Alternatif Oyuncu Önerileri")
+            st.markdown(f"### {get_icon('score')} Alternatif Oyuncu Önerileri", unsafe_allow_html=True)
             st.markdown("Gerçek Maç İstatistiklerine (xG, xA, Tackles, vb.) dayalı akıllı öneri sistemi.")
             
             col_rec1, col_rec2 = st.columns([1, 2])
@@ -420,7 +423,8 @@ def main():
                 rec_pos = st.selectbox(
                     "Hangi Mevki İçin Öneri İstiyorsunuz?",
                     options=list(POSITIONAL_WEIGHTS.keys()),
-                    index=list(POSITIONAL_WEIGHTS.keys()).index('ST') # Default ST
+                    index=list(POSITIONAL_WEIGHTS.keys()).index('ST'), # Default ST
+                    format_func=format_position_display
                 )
                 
                 st.info(f"""
@@ -442,7 +446,7 @@ def main():
                 top_candidates = rec_candidates.sort_values('Recommendation_Score', ascending=False).head(10)
                 
                 # Tablo Gösterimi
-                st.markdown(f"#### 🏆 En İyi {rec_pos} Oyuncuları")
+                st.markdown(f"#### {get_icon('chart')} En İyi {rec_pos} Oyuncuları", unsafe_allow_html=True)
                 
                 # Gösterilecek dinamik sütunlar (o pozisyon için önemli olanlar)
                 important_stats = list(POSITIONAL_WEIGHTS[rec_pos].keys())

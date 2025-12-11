@@ -467,3 +467,62 @@ POSITIONAL_WEIGHTS = {
         'bps': 0.1
     }
 }
+
+# =============================================================================
+# GÖRSEL İKON TANIMLAMALARI (UI İÇİN)
+# =============================================================================
+
+# SADECE GÖRÜNÜM İÇİN İKON EŞLEŞTİRMESİ
+# Bu sözlük sadece ekrana yazı yazdırırken kullanılacak.
+# Mantık katmanında (optimization) asla bu ikonlu stringler kullanılmamalıdır.
+DISPLAY_ICONS = {
+    # Mevkiler
+    'GK':  '<i class="fas fa-hand-paper"></i>',      # Eldiven
+    'CB':  '<i class="fas fa-shield-virus"></i>',    # Kalkan
+    'LB':  '<i class="fas fa-shield-alt"></i>',
+    'RB':  '<i class="fas fa-shield-alt"></i>',
+    'DM':  '<i class="fas fa-anchor"></i>',          # Çapa
+    'CM':  '<i class="fas fa-random"></i>',          # Pas/Dağıtım
+    'CAM': '<i class="fas fa-magic"></i>',           # Sihirbaz
+    'LM':  '<i class="fas fa-bolt"></i>',            # Hız
+    'RM':  '<i class="fas fa-bolt"></i>',
+    'LW':  '<i class="fas fa-running"></i>',         # Koşu
+    'RW':  '<i class="fas fa-running"></i>',
+    'ST':  '<i class="fas fa-futbol"></i>',          # Gol
+    
+    # Gruplar
+    'DEF': '<i class="fas fa-shield-alt"></i>',
+    'MID': '<i class="fas fa-cogs"></i>',
+    'FWD': '<i class="fas fa-bullseye"></i>',
+    
+    # Metrikler
+    'score': '<i class="fas fa-star"></i>',
+    'cost': '<i class="fas fa-coins"></i>',
+    'rating': '<i class="fas fa-medal"></i>',
+    'form': '<i class="fas fa-fire-alt"></i>',
+    'money': '<i class="fas fa-sack-dollar"></i>',
+    'chart': '<i class="fas fa-chart-line"></i>',
+    
+    # Genel
+    'app_logo': '<i class="fas fa-futbol"></i>',
+    'check': '<i class="fas fa-check-circle"></i>',
+    'warning': '<i class="fas fa-exclamation-triangle"></i>',
+    
+    # Yeni Eklenenler (Kullanıcı İsteği)
+    'panel': '<i class="fas fa-sliders-h"></i>',
+    'stadium': '<i class="fas fa-landmark"></i>',
+    'group': '<i class="fas fa-users"></i>',
+    'healthy': '<i class="fas fa-user-check"></i>',
+    'tactics': '<i class="fas fa-clipboard-list"></i>',
+    'info': '<i class="fas fa-info-circle"></i>',
+    'budget': '<i class="fas fa-wallet"></i>',
+    'bulb': '<i class="fas fa-lightbulb"></i>', # 💡
+    'target': '<i class="fas fa-crosshairs"></i>', # 🎯
+    'ruler': '<i class="fas fa-ruler-combined"></i>', # 📐
+    'book': '<i class="fas fa-book-open"></i>',
+    'lock': '<i class="fas fa-lock"></i>',
+    'gear': '<i class="fas fa-cog"></i>',
+    'search': '<i class="fas fa-search"></i>',
+    'sort': '<i class="fas fa-sort"></i>',
+    'filter': '<i class="fas fa-filter"></i>'
+}
