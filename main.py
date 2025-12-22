@@ -995,11 +995,15 @@ def main():
                             if 'error' not in scenario:
                                 st.write(f"**Sakat Oyuncu:** {scenario['sakat_oyuncu']}")
                                 st.write(f"**Pozisyon:** {scenario['pozisyon']}")
-                                st.write(f"**Yedek:** {scenario['yedek']}")
-                                st.write(f"**Rating Farkı:** {scenario['rating_farkı']} puan")
+                                
+                                # Yedek oyuncu varsa göster
+                                if 'yedek' in scenario:
+                                    st.write(f"**Yedek:** {scenario['yedek']}")
+                                    st.write(f"**Rating Farkı:** {scenario['rating_farkı']} puan")
+                                
                                 st.write(f"**Tavsiye:** {scenario['recommendation']}")
                                 
-                                if scenario['impact']['toplam_etki'] != 0:
+                                if 'impact' in scenario and scenario['impact']['toplam_etki'] != 0:
                                     st.write(f"\n**Kadro Etkisi:**")
                                     st.write(f"- Ofans kaybı: {scenario['impact']['ofans_kaybı']:.1f}")
                                     st.write(f"- Defans kaybı: {scenario['impact']['defans_kaybı']:.1f}")

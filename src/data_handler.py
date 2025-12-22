@@ -219,7 +219,8 @@ def load_fc26_data(csv_path: str = None) -> pd.DataFrame:
     df = df.rename(columns={
         'Player': 'Oyuncu',
         'Team': 'Takim',
-        'Sub_Pos': 'Alt_Pozisyon',
+        'Original_Pos': 'Alt_Pozisyon',  # Ana pozisyon (RB, CB, ST vb.)
+        'Sub_Pos': 'Alternatif_Pozisyonlar',  # Alternatif pozisyonlar (LB | RM vb.)
         'Group': 'Mevki'
     })
     
