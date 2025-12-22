@@ -1,3 +1,4 @@
+df_raw = pd.read_csv("oyuncular.csv")
 # ⚽ Premier League Kadro Optimizasyonu - Karar Destek Sistemi
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
@@ -5,151 +6,108 @@
 ![PuLP](https://img.shields.io/badge/PuLP-2.7+-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-## 📋 Proje Hakkında
+Tamamı Streamlit üzerinde çalışan bu uygulama, Premier League oyuncu verisi ile **binary integer programming** kullanarak optimal 11'i kurar, senaryo ve duyarlılık analizleri yapar, uyumluluk skorları üretir, Pareto sınırı çizer ve bench/yedek analizleri sunar. Bu doküman, uygulamayı ilk kez açan birinin tüm sekmeleri ve veri beklentilerini anlaması için hazırlandı.
 
-Bu proje, **Karar Destek Sistemleri (Decision Support Systems)** dersi için hazırlanmış bir final projesidir. Uygulama, kullanıcının belirlediği taktik ve bütçe kısıtlarına göre **Doğrusal Programlama (Linear Programming)** kullanarak en optimum futbol kadrosunu (İlk 11) oluşturur.
-
-## 🎯 Özellikler
-
-- **Matematiksel Optimizasyon**: PuLP kütüphanesi ile Binary Integer Programming
-- **İnteraktif Arayüz**: Streamlit tabanlı modern web dashboard
-- **Görselleştirme**: Plotly ile interaktif futbol sahası
-- **Esneklik**: 6 farklı formasyon, 3 farklı strateji
-
-## 🧮 Matematiksel Model
-
-### Karar Değişkenleri
-```
-x_i ∈ {0, 1} : i. oyuncu seçilirse 1, seçilmezse 0 (Binary)
-```
-
-### Amaç Fonksiyonu
-```
-Maximize Σ (w_off × Ofans_i + w_def × Defans_i + w_form × Form_i) × x_i
-```
-
-### Kısıtlar
-1. `Σ x_i = 11` (Toplam 11 oyuncu)
-2. `Σ x_i (GK) = 1` (Tam 1 kaleci)
-3. `Σ x_i (DEF) = formation_def` (Taktik gereği defans sayısı)
-4. `Σ x_i (MID) = formation_mid` (Taktik gereği orta saha sayısı)
-5. `Σ x_i (FWD) = formation_fwd` (Taktik gereği forvet sayısı)
-6. `Σ (Fiyat_i × x_i) ≤ Budget` (Bütçe kısıtı)
-7. `x_i = 0 if Sakatlik_i = 1` (Sakat oyuncular seçilemez)
-
-## 📁 Proje Yapısı
-
-```
-premier_league_kds/
-│
-├── main.py                  # Uygulamanın giriş noktası
-├── requirements.txt         # Kütüphane bağımlılıkları
-├── README.md                # Proje dokümantasyonu
-│
-└── src/                     # Kaynak kodların ana paketi
-    ├── __init__.py          # Paket başlatma
-    ├── config.py            # Sabitler (Taktikler, Renkler, Ayarlar)
-    ├── data_handler.py      # Veri üretimi ve normalizasyon işlemleri
-    ├── optimizer.py         # PuLP modelleme mantığı (Core Engine)
-    ├── visualizer.py        # Plotly grafik ve tablo fonksiyonları
-    └── ui_components.py     # CSS ve Streamlit arayüz bileşenleri
-```
-
-## 🚀 Kurulum ve Çalıştırma
-
-### 1. Gereksinimleri Yükleyin
+## 🚀 Hızlı Başlangıç
 
 ```bash
-# Virtual environment oluştur (önerilir)
+# 1) Sanal ortam (önerilir)
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# veya
-venv\Scripts\activate     # Windows
+venv\Scripts\activate   # Windows
 
-# Bağımlılıkları yükle
+# 2) Bağımlılıklar
 pip install -r requirements.txt
-```
 
-### 2. Uygulamayı Başlatın
-
-```bash
+# 3) Uygulamayı başlat
 streamlit run main.py
 ```
 
-### 3. Tarayıcıda Açın
+Tarayıcıdan `http://localhost:8501` adresine gidin.
 
-```
-http://localhost:8501
-```
+## 📂 Veri ve Yapı
+
+- `data/playerstats_2025.csv`: Ana oyuncu istatistikleri (rating, ofans, defans, form, fiyat, sakatlık, alt pozisyon).
+- `data/premier_league_players_tf.csv`: Pozisyon/flex bilgisini destekler (Alt_Pozisyon vs. Atanan_Pozisyon).
+- `data/Player-positions.csv`: Ek pozisyon detayları.
+- Kaynak kod: `src/` altındaki modüller (optimizer, visualizer, decision_analyzer, sensitivity_analyzer, alternative_solutions, explainability, compatibility, pareto_analysis, narrative_builder, bench_analyzer).
+
+## 🧭 Arayüz Rehberi (Sekmeler)
+
+**Kontrol Paneli (sol sidebar)**
+- Takım seçimi: Veriyi kulüp bazında filtreler.
+- Formasyon: 4-4-2, 4-3-3, 3-5-2, 5-3-2, 4-2-3-1, 3-4-3.
+- Bütçe slider’ı: Maksimum toplam maliyet.
+- Strateji: Dengeli, Ofansif, Defansif (ağırlık setlerini etkiler).
+
+**Tab 1 – Optimal 11**
+- LP çözümüyle seçilen ilk 11; saha yerleşimi (Plotly pitch) ve detaylı tablo.
+- Kadro skorları ve metrik kartları.
+
+**Tab 2 – Karar Destek Raporu**
+- `decision_analyzer`: Ağırlıklı skor, risk uyarıları, seçilen/alternatif oyuncular, pozisyon bazlı özetler.
+
+**Tab 3 – Tüm Kadro**
+- Pozisyon filtreleri, sakatlık filtresi, sıralama; takımın tüm oyuncu havuzu.
+
+**Tab 4 – Duyarlılık Analizi**
+- `sensitivity_analyzer`: Tornado (parametre etki sıralaması) ve seçili parametre için yüzde değişim vs skor tablosu ve çizgi grafiği.
+
+**Tab 5 – What-If Senaryoları**
+- Bütçe değişimi, minimum rating seviyesi, formasyon değişikliği senaryoları (`alternative_solutions`).
+
+**Tab 6 – Oyuncu Uyumluluğu**
+- `compatibility`: Kimya/uyum skorları, pozisyon eşleşmeleri ve öneriler.
+
+**Tab 7 – Pareto Analizi**
+- `pareto_analysis`: Ofans/defans (veya maliyet) için Pareto frontier; grafik ve tablo.
+
+**Tab 8 – Kadro Raporu (Narrative)**
+- `narrative_builder`: Yönetici özeti, formasyon seçimi açıklaması, güçlü/zayıf yönler ve öneriler. Markdown indirme butonu.
+
+**Tab 9 – Bench & Yedekler**
+- `bench_analyzer`: Pozisyon başına yedekler, kadro derinliği, sakatlık senaryosu simülasyonu.
+
+## 🔢 Optimizasyon Modeli (özet)
+
+Karar değişkeni: $x_i \in \{0,1\}$ oyuncu i seçildiyse 1.
+
+Amaç fonksiyonu (örnek):
+$$\max \sum_i (w_{rating} r_i + w_{form} f_i + w_{off} o_i + w_{def} d_i - w_{cost} c_i) x_i$$
+
+Ana kısıtlar:
+- Pozisyona göre gerekli oyuncu sayıları (formasyon). 
+- Toplam 11 oyuncu.
+- Bütçe üst limiti.
+- Sakat oyuncu seçilmez.
+- Esnek pozisyonlar `config.POSITION_CAN_BE_FILLED_BY` ile kontrol edilir.
+
+Solver: PuLP CBC (varsayılan).
+
+## ⚙️ Konfigürasyon
+
+- `src/config.py`: Formasyonlar, pozisyon esneklikleri, renkler, ikonlar, varsayılan ağırlıklar.
+- `src/data_handler.py`: Veri yükleme ve normalizasyon.
+- `src/optimizer.py`: PuLP modeli ve skor hesaplama.
 
 ## 📦 Bağımlılıklar
 
-| Kütüphane | Versiyon | Açıklama |
-|-----------|----------|----------|
-| streamlit | ≥1.28.0 | Web arayüzü framework'ü |
-| pandas | ≥2.0.0 | Veri manipülasyonu |
-| numpy | ≥1.24.0 | Sayısal hesaplamalar |
-| pulp | ≥2.7.0 | Doğrusal programlama çözücü |
-| plotly | ≥5.18.0 | İnteraktif görselleştirme |
+| Kütüphane | Versiyon | Not |
+|-----------|----------|-----|
+| streamlit | ≥1.28.0 | UI |
+| pandas | ≥2.0.0 | Veri işleme |
+| numpy | ≥1.24.0 | Sayısal işlemler |
+| pulp | ≥2.7.0 | BIP çözücü |
+| plotly | ≥5.18.0 | Grafik |
 
-## 🎮 Kullanım
+## 🛠️ Geliştirici Notları
 
-### Kontrol Paneli (Sidebar)
-
-1. **Taktik Dizilişi**: 4-4-2, 4-3-3, 3-5-2, 5-3-2, 4-2-3-1, 3-4-3
-2. **Bütçe Limiti**: Slider ile maksimum harcama belirleme
-3. **Oyun Stratejisi**: 
-   - Ofansif (Ofans: 50%, Defans: 20%, Form: 30%)
-   - Defansif (Ofans: 20%, Defans: 50%, Form: 30%)
-   - Dengeli (Ofans: 35%, Defans: 35%, Form: 30%)
-
-### Çıktılar
-
-- **Saha Görünümü**: Oyuncuların pozisyonlarını interaktif sahada görüntüleme
-- **Kadro Listesi**: Seçilen 11 oyuncunun detaylı tablosu
-- **Tüm Oyuncular**: Filtrelenebilir oyuncu havuzu
-
-## 🔧 Gerçek Veri Kullanımı
-
-Dummy veri yerine gerçek CSV verisi kullanmak için `main.py` dosyasında:
-
-```python
-# Değiştir:
-df_raw = create_dummy_dataset(n_players=60)
-
-# Şununla:
-import pandas as pd
-df_raw = pd.read_csv("oyuncular.csv")
-```
-
-### CSV Formatı
-
-```csv
-Oyuncu,Mevki,Takim,Fiyat_M,Form,Ofans_Gucu,Defans_Gucu,Sakatlik
-Erling Haaland,FWD,Manchester City,35.0,95,98,25,0
-Virgil Van Dijk,DEF,Liverpool,18.0,88,45,95,0
-...
-```
-
-## 📊 Teknik Detaylar
-
-### Min-Max Normalizasyon
-```
-X_norm = (X - X_min) / (X_max - X_min)
-```
-
-### Çözüm Yöntemi
-- **Solver**: CBC (Coin-or Branch and Cut)
-- **Problem Tipi**: Binary Integer Programming (BIP)
-- **Karmaşıklık**: NP-Hard (Branch & Bound ile çözülür)
-
-## 👨‍💻 Geliştirici
-
-**Karar Destek Sistemleri - Final Projesi**
+- Yeni veri kaynağı eklerken `data_handler.py` içindeki kolon adlarıyla uyumlu hale getirin (Oyuncu_Adi/Oyuncu, Alt_Pozisyon, Fiyat_M, Form, Ofans_Gucu, Defans_Gucu, Sakatlik).
+- Bench sekmesi isim kolonu fallback’i destekler (Oyuncu_Adi yoksa Oyuncu). 
+- İkonlar HTML olarak `DISPLAY_ICONS` sözlüğünde; selectbox’larda ham HTML görünmemesi için `format_position_display` sade metin döndürür.
 
 ## 📄 Lisans
 
-Bu proje MIT lisansı altında lisanslanmıştır.
+MIT Lisansı.
 
 ---
 
