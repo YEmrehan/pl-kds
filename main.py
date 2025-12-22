@@ -62,6 +62,23 @@ from src.bench_analyzer import BenchAnalyzer
 st.set_page_config(**PAGE_CONFIG)
 
 
+# =============================================================================
+# PERFORMANS: VERİ ÖNBELLEKLEME (CACHING)
+# =============================================================================
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_cached_data():
+    """
+    Veriyi bir kez yükler ve 1 saat boyunca önbelleğe alır.
+    Bu sayede her butona basıldığında veri tekrar yüklenmez.
+    
+    Returns:
+        pd.DataFrame: Normalize edilmiş oyuncu verileri
+    """
+    df_raw = load_fc26_data()
+    df_full = normalize_data(df_raw)
+    return df_full
+
+
 def main():
     """
     Streamlit uygulamasının ana fonksiyonu.
@@ -75,12 +92,12 @@ def main():
     render_main_title()
     
     # =========================================================================
-    # VERİ YÜKLEME
+    # VERİ YÜKLEME (CACHED - Performans İyileştirmesi)
     # =========================================================================
     
-    # FC26 oyuncu verilerini yükle
-    df_raw = load_fc26_data()
-    df_full = normalize_data(df_raw)
+    # FC26 oyuncu verilerini önbellekten yükle (ilk seferde işlenir, sonra cache'den gelir)
+    with st.spinner("Veriler yükleniyor ve işleniyor..."):
+        df_full = get_cached_data()
     
     # Takım listesini al (alfabetik sırala)
     teams = sorted(df_full['Takim'].unique().tolist())
