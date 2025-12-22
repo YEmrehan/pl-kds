@@ -155,7 +155,7 @@ def format_position_display(pos):
 def render_main_title():
     """Ana başlığı render eder."""
     st.markdown(
-        f'<div class="main-title">{get_icon("app_logo")} FC26 Kadro Optimizasyonu<br>'
+        f'<div class="main-title">{get_icon("app_logo")} Premier Lig Kadro Optimizasyonu<br>'
         '<span style="font-size: 1.2rem; font-weight: normal;">'
         f'{get_icon("chart")} Karar Destek Sistemi - Alt Pozisyon Bazlı Doğrusal Programlama</span></div>',
         unsafe_allow_html=True
