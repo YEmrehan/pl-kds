@@ -532,7 +532,7 @@ def main():
             
             col_d1, col_d2, col_d3 = st.columns(3)
             with col_d1:
-                st.metric("Toplam Skor", f"{decision_report['total_score']:.2f}", "0-100 skala")
+                st.metric("Toplam Skor", f"{decision_report['weighted_score']:.2f}", "0-100 skala")
             with col_d2:
                 st.metric("Bütçe Kullanımı", f"{decision_report['budget_utilization']:.1f}%", f"£{decision_report['total_cost']:.1f}M")
             with col_d3:

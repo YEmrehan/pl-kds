@@ -34,7 +34,7 @@ def calculate_weighted_score(squad_df: pd.DataFrame,
     """
     score_components = {
         'rating': (squad_df['Rating'].mean() / 100) * weights.get('rating', 0.25),
-        'form': (squad_df['Form'].mean() / 10) * weights.get('form', 0.20),
+        'form': (squad_df['Form'].mean() / 100) * weights.get('form', 0.20),
         'offense': (squad_df['Ofans_Gucu'].mean() / 100) * weights.get('offense', 0.20),
         'defense': (squad_df['Defans_Gucu'].mean() / 100) * weights.get('defense', 0.20),
     }
@@ -117,11 +117,13 @@ def generate_decision_report(squad_df: pd.DataFrame,
     Kadroya ilişkin detaylı karar raporu oluştur.
     """
     metrics = calculate_squad_metrics(squad_df)
+    weighted_score = calculate_weighted_score(squad_df, weights)
     
     report = {
         'formation': formation,
         'squad_size': metrics['squad_size'],
         'total_score': round(total_score, 2),
+        'weighted_score': round(weighted_score, 2),
         'total_cost': round(metrics['total_cost'], 1),
         'budget_utilization': round((metrics['total_cost'] / budget) * 100, 1),
         'remaining_budget': round(budget - metrics['total_cost'], 1),
