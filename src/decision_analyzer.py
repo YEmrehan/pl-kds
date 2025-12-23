@@ -43,8 +43,9 @@ def calculate_weighted_score(squad_df: pd.DataFrame,
     
     # Maliyeti düşün (daha az maliyet = daha iyi)
     total_cost = squad_df['Fiyat_M'].sum()
-    cost_factor = 1 - (total_cost / 200) * weights.get('cost_penalty', 0.15)
-    cost_factor = max(0.5, cost_factor)  # Minimum 0.5 çarpan
+    # Toplam kadro maliyeti için referans değer artırıldı (200M -> 1000M)
+    cost_factor = 1 - (total_cost / 1000) * weights.get('cost_penalty', 0.15)
+    cost_factor = max(0.85, cost_factor)  # Minimum çarpan yükseltildi (0.5 -> 0.85)
     
     final_score = (subtotal / 0.85) * 100 * cost_factor
     return min(100, max(0, final_score))
